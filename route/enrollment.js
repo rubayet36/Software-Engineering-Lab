@@ -39,4 +39,17 @@ router.get('/', (req, res) => {
   res.json(results);
 });
 
+// 2. Retrieve one — GET /api/enrollments/:id
+router.get('/:id', (req, res) => {
+  const db = loadDB();
+  const id = parseInt(req.params.id, 10);
+  const enrollment = db.enrollments.find(e => e.id === id);
+
+  if (!enrollment) {
+    return res.status(404).json({ error: 'Enrollment not found' });
+  }
+
+  res.json(enrollment);
+});
+
 module.exports = router;
