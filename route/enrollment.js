@@ -14,4 +14,29 @@ function saveDB(data) {
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
+// Security Middleware: X-API-Key header check
+router.use((req, res, next) => {
+  const apiKey = req.headers['x-api-key'];
+  if (!apiKey || apiKey !== 'secret123') {
+    return res.status(401).json({ error: 'Unauthorized: Missing or invalid API key' });
+  }
+  next();
+});
+
+// 1. Retrieve — GET /api/enrollments (All & Filtered)
+router.get('/', (req, res) => {
+  const db = loadDB();
+  let results = db.enrollments || [];
+  const { courseCode, status } = req.query;
+
+  if (courseCode) {
+    results = results.filter(e => e.courseCode === courseCode);
+  }
+  if (status) {
+    results = results.filter(e => e.status === status);
+  }
+
+  res.json(results);
+});
+
 module.exports = router;
