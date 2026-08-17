@@ -52,4 +52,30 @@ router.get('/:id', (req, res) => {
   res.json(enrollment);
 });
 
+// 3. Save — POST /api/enrollments
+router.post('/', (req, res) => {
+  const { studentName, courseCode, semester, status } = req.body;
+
+  if (!studentName || !courseCode) {
+    return res.status(400).json({ error: 'studentName and courseCode are required fields' });
+  }
+
+  const db = loadDB();
+  const maxId = db.enrollments.reduce((max, e) => (e.id > max ? e.id : max), 0);
+  const newId = maxId + 1;
+
+  const newEnrollment = {
+    id: newId,
+    studentName,
+    courseCode,
+    semester: semester || 'Fall2026',
+    status: status || 'enrolled'
+  };
+
+  db.enrollments.push(newEnrollment);
+  saveDB(db);
+
+  res.status(201).json(newEnrollment);
+});
+
 module.exports = router;
