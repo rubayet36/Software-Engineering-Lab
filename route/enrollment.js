@@ -105,4 +105,20 @@ router.put('/:id', (req, res) => {
   res.json(db.enrollments[index]);
 });
 
+// 5. Delete — DELETE /api/enrollments/:id
+router.delete('/:id', (req, res) => {
+  const db = loadDB();
+  const id = parseInt(req.params.id, 10);
+  const index = db.enrollments.findIndex(e => e.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ error: 'Enrollment not found' });
+  }
+
+  const deleted = db.enrollments.splice(index, 1)[0];
+  saveDB(db);
+
+  res.json({ message: 'Enrollment deleted successfully', deleted });
+});
+
 module.exports = router;
