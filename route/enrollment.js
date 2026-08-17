@@ -78,4 +78,31 @@ router.post('/', (req, res) => {
   res.status(201).json(newEnrollment);
 });
 
+// 4. Update — PUT /api/enrollments/:id
+router.put('/:id', (req, res) => {
+  const db = loadDB();
+  const id = parseInt(req.params.id, 10);
+  const index = db.enrollments.findIndex(e => e.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ error: 'Enrollment not found' });
+  }
+
+  if (req.body.status !== undefined) {
+    db.enrollments[index].status = req.body.status;
+  }
+  if (req.body.studentName !== undefined) {
+    db.enrollments[index].studentName = req.body.studentName;
+  }
+  if (req.body.courseCode !== undefined) {
+    db.enrollments[index].courseCode = req.body.courseCode;
+  }
+  if (req.body.semester !== undefined) {
+    db.enrollments[index].semester = req.body.semester;
+  }
+
+  saveDB(db);
+  res.json(db.enrollments[index]);
+});
+
 module.exports = router;
